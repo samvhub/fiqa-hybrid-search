@@ -1,7 +1,7 @@
 .PHONY: index eval bench test
 
 index:
-	python -c "from src.index.indexer import build_sample_index; build_sample_index()"
+	python src/index/indexer.py
 
 eval:
 	python src/eval.py

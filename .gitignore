@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Large data artifacts — regenerate with `make index`
+data/fiqa/corpus.jsonl
+data/fiqa/queries.jsonl
+data/fiqa/qrels/
+data/fiqa/bm25_index.pkl
+data/fiqa/dense_embeddings.npy
+data/fiqa.zip
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
