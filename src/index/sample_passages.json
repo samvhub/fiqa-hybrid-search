@@ -1,0 +1,14 @@
+[
+  {
+    "id": 0,
+    "text": "Short selling is selling a security you do not own. Traders borrow shares and sell them, hoping to buy back later at a lower price."
+  },
+  {
+    "id": 1,
+    "text": "A market order executes immediately at current market prices. Market orders prioritize speed over price."
+  },
+  {
+    "id": 2,
+    "text": "Diversification reduces portfolio risk by spreading investments across uncorrelated assets."
+  }
+]

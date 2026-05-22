@@ -1,0 +1,6 @@
+numpy
+scipy
+scikit-learn
+rank-bm25
+sentence-transformers>=2.2.2
+tqdm
