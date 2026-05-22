@@ -1,7 +1,26 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyo
 .venv/
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
 
 # Large data artifacts — regenerate with `make index`
 data/fiqa/corpus.jsonl
@@ -10,6 +29,9 @@ data/fiqa/qrels/
 data/fiqa/bm25_index.pkl
 data/fiqa/dense_embeddings.npy
 data/fiqa.zip
+
+# Generated eval dump (raw input for failures.md, not the final artifact)
+results/failure_candidates.json
 
 # pytest / coverage
 .pytest_cache/
