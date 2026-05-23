@@ -25,13 +25,21 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
+from dotenv import load_dotenv
+load_dotenv(os.path.join(ROOT, ".env"))
+
 from src.retrieval.bm25 import BM25Retriever
 from src.retrieval.dense import DenseRetriever
 from src.retrieval.hybrid import HybridRetriever
-from src.config import (
-    ABLATION_ALPHAS, COLD_WINDOW, DATA_DIR, DEFAULT_ALPHA,
-    DEFAULT_TOP_K, DENSE_MODEL, RESULTS_DIR, WARMUP_WINDOW,
-)
+
+DATA_DIR     = os.path.join(ROOT, os.environ.get("DATA_DIR", "data/fiqa"))
+RESULTS_DIR  = os.path.join(ROOT, os.environ.get("RESULTS_DIR", "results"))
+DENSE_MODEL  = os.environ.get("DENSE_MODEL", "all-MiniLM-L6-v2")
+DEFAULT_TOP_K  = int(os.environ.get("DEFAULT_TOP_K", "10"))
+DEFAULT_ALPHA  = float(os.environ.get("DEFAULT_ALPHA", "0.5"))
+COLD_WINDOW    = int(os.environ.get("COLD_WINDOW", "20"))
+WARMUP_WINDOW  = int(os.environ.get("WARMUP_WINDOW", "100"))
+ABLATION_ALPHAS = tuple(float(x) for x in os.environ.get("ABLATION_ALPHAS", "0.3,0.5,0.7").split(","))
 
 
 # ---------------------------------------------------------------------------

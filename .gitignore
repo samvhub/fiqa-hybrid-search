@@ -7,9 +7,9 @@ __pycache__/
 dist/
 build/
 
-# Environment
-.env
-.env.*
+# Environment — commit .env (no secrets); ignore local overrides
+.env.local
+.env.*.local
 
 # IDE
 .vscode/

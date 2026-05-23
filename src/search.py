@@ -8,10 +8,16 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
+from dotenv import load_dotenv
+load_dotenv(os.path.join(ROOT, ".env"))
+
 from src.retrieval.bm25 import BM25Retriever
 from src.retrieval.dense import DenseRetriever
 from src.retrieval.hybrid import HybridRetriever
-from src.config import DATA_DIR, DEFAULT_ALPHA, DENSE_MODEL
+
+DATA_DIR = os.path.join(ROOT, os.environ.get("DATA_DIR", "data/fiqa"))
+DENSE_MODEL = os.environ.get("DENSE_MODEL", "all-MiniLM-L6-v2")
+DEFAULT_ALPHA = float(os.environ.get("DEFAULT_ALPHA", "0.5"))
 
 
 def _load_fiqa_index():

@@ -9,7 +9,11 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from src.config import DENSE_BATCH_SIZE, DENSE_MODEL
+from dotenv import load_dotenv
+load_dotenv(os.path.join(ROOT, ".env"))
+
+DENSE_MODEL = os.environ.get("DENSE_MODEL", "all-MiniLM-L6-v2")
+DENSE_BATCH_SIZE = int(os.environ.get("DENSE_BATCH_SIZE", "64"))
 
 try:
     from sentence_transformers import SentenceTransformer

@@ -9,7 +9,12 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from src.config import DATA_DIR, DENSE_MODEL, FIQA_URL
+from dotenv import load_dotenv
+load_dotenv(os.path.join(ROOT, ".env"))
+
+FIQA_URL = os.environ["FIQA_URL"]
+DENSE_MODEL = os.environ["DENSE_MODEL"]
+DATA_DIR = os.path.join(ROOT, os.environ.get("DATA_DIR", "data/fiqa"))
 
 
 def _download_fiqa(data_dir: str) -> None:
