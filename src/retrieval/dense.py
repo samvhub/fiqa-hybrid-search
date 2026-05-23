@@ -1,8 +1,15 @@
 import os
+import sys
 
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+from src.config import DENSE_BATCH_SIZE, DENSE_MODEL
 
 try:
     from sentence_transformers import SentenceTransformer
@@ -11,7 +18,7 @@ except Exception:
 
 
 class DenseRetriever:
-    def __init__(self, model_name: str = "all-MiniLM-L6-v2", use_model: bool = True):
+    def __init__(self, model_name: str = DENSE_MODEL, use_model: bool = True):
         self.model_name = model_name
         self.use_model = use_model
         self.model = None
@@ -28,7 +35,7 @@ class DenseRetriever:
                     self.docs,
                     show_progress_bar=True,
                     convert_to_numpy=True,
-                    batch_size=64,
+                    batch_size=DENSE_BATCH_SIZE,
                 )
                 return
             except Exception:

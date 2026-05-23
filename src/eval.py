@@ -28,9 +28,10 @@ if ROOT not in sys.path:
 from src.retrieval.bm25 import BM25Retriever
 from src.retrieval.dense import DenseRetriever
 from src.retrieval.hybrid import HybridRetriever
-
-DATA_DIR = os.path.join(ROOT, "data", "fiqa")
-RESULTS_DIR = os.path.join(ROOT, "results")
+from src.config import (
+    ABLATION_ALPHAS, COLD_WINDOW, DATA_DIR, DEFAULT_ALPHA,
+    DEFAULT_TOP_K, DENSE_MODEL, RESULTS_DIR, WARMUP_WINDOW,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -82,7 +83,7 @@ def load_indexes():
         bm = pickle.load(f)
 
     print("Loading dense embeddings + model...")
-    dn = DenseRetriever(model_name="all-MiniLM-L6-v2", use_model=True)
+    dn = DenseRetriever(model_name=DENSE_MODEL, use_model=True)
     dn.load_index(DATA_DIR, bm.docs)
 
     ram_after = _measure_ram_mb()
@@ -151,9 +152,9 @@ def eval_retriever(retriever, queries: dict, qrels: dict, doc_ids: list,
             "relevant": list(relevant),
         }
 
-        if i < 20:
+        if i < COLD_WINDOW:
             cold_times.append(elapsed_ms)
-        elif i < 120:
+        elif i < COLD_WINDOW + WARMUP_WINDOW:
             pass  # warmup window — intentionally not measured
         else:
             warm_times.append(elapsed_ms)
@@ -194,7 +195,7 @@ def eval_retriever(retriever, queries: dict, qrels: dict, doc_ids: list,
 # ---------------------------------------------------------------------------
 
 def ablation_alpha_sweep(bm, dn, queries, qrels, doc_ids, docs,
-                         alphas=(0.3, 0.5, 0.7), top_k=10):
+                         alphas=ABLATION_ALPHAS, top_k=DEFAULT_TOP_K):
     results = {}
     for alpha in alphas:
         hy = HybridRetriever(bm, dn, alpha=alpha)
@@ -273,7 +274,7 @@ def run_eval():
 
     bm, dn, doc_ids, queries, qrels, peak_ram_mb = load_indexes()
     docs = bm.docs
-    top_k = 10
+    top_k = DEFAULT_TOP_K
 
     print("\n--- BM25 ---")
     bm25_summary, _, _, _ = eval_retriever(
@@ -281,14 +282,14 @@ def run_eval():
     )
     bm25_summary["peak_ram_mb"] = peak_ram_mb
 
-    print("\n--- Dense (all-MiniLM-L6-v2) ---")
+    print(f"\n--- Dense ({DENSE_MODEL}) ---")
     dense_summary, _, _, _ = eval_retriever(
         dn, queries, qrels, doc_ids, docs, top_k=top_k, label="Dense"
     )
     dense_summary["peak_ram_mb"] = peak_ram_mb
 
-    print("\n--- Hybrid (alpha=0.5) ---")
-    hy = HybridRetriever(bm, dn, alpha=0.5)
+    print(f"\n--- Hybrid (alpha={DEFAULT_ALPHA}) ---")
+    hy = HybridRetriever(bm, dn, alpha=DEFAULT_ALPHA)
     hybrid_summary, hybrid_per_query, _, _ = eval_retriever(
         hy, queries, qrels, doc_ids, docs, top_k=top_k, label="Hybrid"
     )

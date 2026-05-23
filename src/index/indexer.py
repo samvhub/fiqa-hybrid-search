@@ -9,8 +9,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-DATA_DIR = os.path.join(ROOT, "data", "fiqa")
-FIQA_URL = "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/fiqa.zip"
+from src.config import DATA_DIR, DENSE_MODEL, FIQA_URL
 
 
 def _download_fiqa(data_dir: str) -> None:
@@ -119,8 +118,8 @@ def build_fiqa_index(data_dir: str = DATA_DIR) -> str:
         pickle.dump(bm, f)
     print(f"  BM25 saved -> {bm25_path}")
 
-    print("Encoding dense embeddings with all-MiniLM-L6-v2 (CPU, this takes a few minutes)...")
-    dn = DenseRetriever(model_name="all-MiniLM-L6-v2", use_model=True)
+    print(f"Encoding dense embeddings with {DENSE_MODEL} (CPU, this takes a few minutes)...")
+    dn = DenseRetriever(model_name=DENSE_MODEL, use_model=True)
     dn.build_index(docs)
     dn.save_index(data_dir)
     print(f"  Embeddings saved -> {os.path.join(data_dir, 'dense_embeddings.npy')}")

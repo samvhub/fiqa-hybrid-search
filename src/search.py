@@ -11,8 +11,7 @@ if ROOT not in sys.path:
 from src.retrieval.bm25 import BM25Retriever
 from src.retrieval.dense import DenseRetriever
 from src.retrieval.hybrid import HybridRetriever
-
-DATA_DIR = os.path.join(ROOT, "data", "fiqa")
+from src.config import DATA_DIR, DEFAULT_ALPHA, DENSE_MODEL
 
 
 def _load_fiqa_index():
@@ -25,7 +24,7 @@ def _load_fiqa_index():
     with open(bm25_path, "rb") as f:
         bm = pickle.load(f)
 
-    dn = DenseRetriever(model_name="all-MiniLM-L6-v2", use_model=True)
+    dn = DenseRetriever(model_name=DENSE_MODEL, use_model=True)
     dn.load_index(DATA_DIR, bm.docs)
     return bm, dn, doc_ids
 
@@ -60,7 +59,7 @@ def main():
         )
         bm, dn, doc_ids = _load_sample_index()
 
-    hy = HybridRetriever(bm, dn, alpha=0.5)
+    hy = HybridRetriever(bm, dn, alpha=DEFAULT_ALPHA)
     results = hy.search(args.query, top_k=args.top_k)
 
     for rank, (idx, score) in enumerate(results, start=1):
