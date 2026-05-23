@@ -85,6 +85,12 @@ def build_fiqa_index(data_dir: str = DATA_DIR) -> str:
     from src.retrieval.bm25 import BM25Retriever
     from src.retrieval.dense import DenseRetriever
 
+    bm25_path = os.path.join(data_dir, "bm25_index.pkl")
+    dense_path = os.path.join(data_dir, "dense_embeddings.npy")
+    if os.path.exists(bm25_path) and os.path.exists(dense_path):
+        print("Pre-built index found, skipping rebuild.")
+        return data_dir
+
     _download_fiqa(data_dir)
 
     print("Loading corpus...")

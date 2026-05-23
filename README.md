@@ -53,20 +53,26 @@ pytest -q
 
 ## Docker
 
+The image is self-contained: `docker build` downloads FiQA (~18 MB), encodes all passages,
+and bakes the index + model weights into the image. No internet access is needed at run time.
+
 ```bash
+# Build (~20 min first time; fast no-op if data/fiqa/ index is already present)
 docker build -t fiqa-search .
 
-# Build index inside container (only needed if data/ not pre-built)
-docker run --rm -v "$(pwd)/data:/app/data" fiqa-search python src/index/indexer.py
+# Run the full benchmark — writes results/bench.json inside the container
+docker run --rm fiqa-search
 
-# Run eval
-docker run --rm -v "$(pwd)/data:/app/data" -v "$(pwd)/results:/app/results" \
-    fiqa-search python src/eval.py
+# Persist results to the host
+docker run --rm -v "$(pwd)/results:/app/results" fiqa-search
 
 # Interactive search
-docker run --rm -v "$(pwd)/data:/app/data" fiqa-search \
-    --query "what is short selling?" --top-k 10
+docker run --rm fiqa-search python src/search.py --query "what is short selling?" --top-k 10
 ```
+
+To speed up rebuilds, place the pre-built index files (`data/fiqa/bm25_index.pkl` and
+`data/fiqa/dense_embeddings.npy`) in the build context before running `docker build`.
+The indexer detects them and skips the encoding step entirely.
 
 ## Repository layout
 
