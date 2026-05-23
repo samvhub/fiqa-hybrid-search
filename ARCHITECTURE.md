@@ -10,6 +10,49 @@ by a full harness that measures quality (Recall@10, MRR) and operational metrics
 
 ## 2. Component Map
 
+```mermaid
+flowchart TD
+    subgraph OFFLINE["Offline  ·  make index"]
+        direction TB
+        BEIR["BEIR/FiQA\n(remote zip, 18 MB)"]
+        IDX["indexer.py"]
+        BPK["bm25_index.pkl\n98 MB"]
+        DNP["dense_embeddings.npy\n84 MB  ·  57 638 × 384 float32"]
+        META["doc_ids.json\ndev_queries.json\ndev_qrels.json"]
+        BEIR --> IDX
+        IDX --> BPK
+        IDX --> DNP
+        IDX --> META
+    end
+
+    subgraph SERVE["Serve  ·  search.py --query '...' --top-k 10"]
+        direction TB
+        Q["user query"]
+        BM["BM25Retriever\nrank-bm25 · exact match"]
+        DN["DenseRetriever\nall-MiniLM-L6-v2\ncosine sim over 57 K vecs"]
+        HY["HybridRetriever\nmin-max norm\nscore = α·dense + (1-α)·BM25"]
+        OUT["ranked passages\nwith scores"]
+        Q --> BM & DN
+        BM & DN --> HY
+        HY --> OUT
+    end
+
+    subgraph EVAL["Evaluate  ·  make bench"]
+        direction TB
+        EV["eval.py\n500 dev queries"]
+        BJ["results/bench.json\nR@10 · MRR · p50/p95 · RAM\nstratified · ablation"]
+        FC["results/failure_candidates.json\ntop-10 recall=0 cases"]
+        EV --> BJ & FC
+    end
+
+    BPK -->|load at startup| BM
+    DNP -->|load at startup| DN
+    META -->|query + qrel lookup| SERVE & EVAL
+    BPK & DNP -->|load_indexes| EV
+```
+
+### Detailed flow
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  OFFLINE (one-time, run via `make index`)                       │
