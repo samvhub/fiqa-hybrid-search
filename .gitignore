@@ -33,6 +33,10 @@ data/fiqa.zip
 # Generated eval dump (raw input for failures.md, not the final artifact)
 results/failure_candidates.json
 
+# Claude Code
+CLAUDE.md
+.claude/
+
 # pytest / coverage
 .pytest_cache/
 .coverage
