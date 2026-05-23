@@ -11,7 +11,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Bake model weights into the image so docker run needs no internet access.
 # The cache lives in the default HF_HOME (~/.cache/huggingface) inside the image.
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2', revision='c9745ed1d9f207416be6d2e6f8de32d1f16199bf')"
 
 # Copy source and any pre-built index artifacts already present in data/
 COPY . /app
